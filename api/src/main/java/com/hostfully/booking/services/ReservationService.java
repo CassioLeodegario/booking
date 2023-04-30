@@ -10,6 +10,10 @@ import com.hostfully.booking.enums.ReservationStatus;
 import com.hostfully.booking.enums.ReservationType;
 import com.hostfully.booking.resources.dto.ReservationDTO;
 import com.hostfully.booking.util.DateUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -23,30 +27,38 @@ public class ReservationService {
 
     private final ReservationRepository reservationRepository;
 
+    Logger logger = LoggerFactory.getLogger(ReservationService.class);
+
     public ReservationService(ReservationRepository reservationRepository) {
         this.reservationRepository = reservationRepository;
     }
 
     public ReservationDTO createReservation(ReservationDTO reservationDTO) {
+        logger.info("ReservationService.createReservation: Starting reservation creation");
         validate(reservationDTO);
 
         if (isAvailable(reservationDTO.getCheckIn(),
                 reservationDTO.getCheckOut(),
                 Optional.ofNullable(reservationDTO.getId()))) {
-
+            reservationDTO.setStatus(ReservationStatus.ACTIVE);
             Reservation reservation = ReservationConverter.getReservationFromReservationDTO(reservationDTO);
             reservationRepository.save(reservation);
 
+            logger.info("ReservationService.createReservation: Finishing reservation creation");
             return ReservationConverter.getReservationDTOFromReservation(reservation);
-        } else {
-            showUnavailability(reservationDTO);
         }
+
+        showUnavailability(reservationDTO);
         return null;
     }
 
 
     public ReservationDTO getReservation(Long reservationId, Long userId) {
+        logger.info("ReservationService.getReservation: Retrieving reservation");
+
         Optional<Reservation> reservation = reservationRepository.getReservationByIdAndUser(reservationId, userId);
+
+        logger.info("ReservationService.getReservation: Finishing reservation retrieval");
         return ReservationConverter.getReservationDTOFromReservation(
                 reservation.orElseThrow(() ->
                         new ReservationNotFoundException("No booking found for given user")
@@ -55,32 +67,39 @@ public class ReservationService {
 
     }
 
-    public List<ReservationDTO> getReservationsByUser(Long userId) {
-        List<Reservation> reservations = reservationRepository.getReservationByUser(userId);
+    public Page<ReservationDTO> getReservationsByUser(Long userId, Pageable pageable) {
+        logger.info("ReservationService.getReservationsByUser: Retrieving reservation");
+
+        Page<Reservation> reservations = reservationRepository.getReservationByUser(userId, pageable);
 
         if (!reservations.isEmpty()) {
-            return reservations.stream()
-                    .map(ReservationConverter::getReservationDTOFromReservation)
-                    .collect(Collectors.toList());
+            logger.info("ReservationService.getReservationsByUser: Finishing reservation retrieval");
+
+            return reservations.map(ReservationConverter::getReservationDTOFromReservation);
+
         }
 
         throw new ReservationNotFoundException("No booking found for given user");
     }
 
     public void updateReservation(Long reservationId, ReservationDTO reservationDTO) {
+        logger.info("ReservationService.updateReservation: updating reservation");
         validate(reservationDTO);
 
-        Optional<Reservation> reservationOptional = reservationRepository.findById(reservationId);
+        Optional<Reservation> reservationOptional = reservationRepository
+                .getReservationByIdTypeAndStatus(reservationId, ReservationType.BOOKING, ReservationStatus.ACTIVE);
 
         if (reservationOptional.isPresent()) {
             if (isAvailable(reservationDTO.getCheckIn(),
                     reservationDTO.getCheckOut(),
-                    Optional.ofNullable(reservationDTO.getId()))) {
+                    Optional.ofNullable(reservationId))) {
                 Reservation reservation = reservationOptional.get();
                 reservation.setCheckIn(reservationDTO.getCheckIn());
                 reservation.setCheckOut(reservationDTO.getCheckOut());
                 reservation.setPlaceId(reservationDTO.getPlaceId());
                 reservationRepository.save(reservation);
+
+                logger.info("ReservationService.updateReservation: Finishing reservation update");
                 return;
             }
 
@@ -89,6 +108,22 @@ public class ReservationService {
         }
 
         throw new ReservationNotFoundException("No booking found for given booking id");
+    }
+
+    public void deleteReservation(Long reservationId, ReservationType type) {
+        logger.info("ReservationService.deleteReservation: deleting reservation");
+        Optional<Reservation> reservationOptional = reservationRepository.getReservationByIdTypeAndStatus(reservationId, type, ReservationStatus.ACTIVE);
+        if (reservationOptional.isPresent()) {
+            Reservation reservation = reservationOptional.get();
+            reservation.setStatus(ReservationStatus.DELETED);
+            reservationRepository.save(reservation);
+
+            logger.info("ReservationService.deleteReservation: finishing reservation delete");
+            return;
+        }
+        String typeDescription = type.toString().toLowerCase();
+        throw new ReservationNotFoundException("No " + typeDescription + " found for given id");
+
     }
 
     private void showUnavailability(ReservationDTO reservationDTO) {
@@ -102,19 +137,6 @@ public class ReservationService {
                         + unavailableDates
                         + " are already taken"
         );
-    }
-
-    public void deleteReservation(Long reservationId, ReservationType type) {
-        Optional<Reservation> reservationOptional = reservationRepository.getReservationByIdAndType(reservationId, type);
-        if (reservationOptional.isPresent()) {
-            Reservation reservation = reservationOptional.get();
-            reservation.setStatus(ReservationStatus.DELETED);
-            reservationRepository.save(reservation);
-            return;
-        }
-        String typeDescription = type.toString().toLowerCase();
-        throw new ReservationNotFoundException("No " + typeDescription + " found for given id");
-
     }
 
     private List<String> getUnavailableDates(

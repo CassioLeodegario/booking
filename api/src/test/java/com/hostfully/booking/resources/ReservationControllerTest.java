@@ -1,6 +1,7 @@
 package com.hostfully.booking.resources;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.hostfully.booking.config.CustomPage;
 import com.hostfully.booking.domain.exceptions.InvalidRangeException;
 import com.hostfully.booking.domain.exceptions.RangeNotAvailableException;
 import com.hostfully.booking.domain.exceptions.ReservationNotFoundException;
@@ -12,6 +13,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
@@ -21,6 +26,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.util.Collections;
 
 import static com.hostfully.booking.mocks.CommonMocks.mockReservationDTO;
 import static org.hamcrest.Matchers.containsString;
@@ -149,7 +155,7 @@ public class ReservationControllerTest {
 
 
         RequestBuilder request = MockMvcRequestBuilders
-                .get("/v1/bookings/"+userId+"/"+reservationId)
+                .get("/v1/bookings/" + userId + "/" + reservationId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON);
 
@@ -164,6 +170,33 @@ public class ReservationControllerTest {
     }
 
     @Test
+    public void getAllBookings() throws Exception {
+        final long userId = 5L;
+        final int page = 0;
+        final int size = 10;
+        final String sort = "checkIn";
+        Page<ReservationDTO> customPage = new PageImpl<>(
+                Collections.singletonList(mockReservationDTO(1L, ReservationType.BOOKING)),
+                PageRequest.of(page, size),
+                1);
+
+        when(reservationService.getReservationsByUser(anyLong(), any(Pageable.class)))
+                .thenReturn(customPage);
+
+        RequestBuilder request = MockMvcRequestBuilders
+                .get("/v1/bookings?userId=" + userId + "&page=" + page + "&size=" + size + "&sort=" + sort)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON);
+
+        String result = asJsonString(new CustomPage<>(customPage));
+
+        mockMvc.perform(request)
+                .andExpect(status().isOk())
+                .andExpect(content().json(result))
+                .andReturn();
+    }
+
+    @Test
     public void getReservationNotFound() throws Exception {
         final long userId = 5L;
         final long reservationId = 10L;
@@ -173,7 +206,7 @@ public class ReservationControllerTest {
 
 
         RequestBuilder request = MockMvcRequestBuilders
-                .get("/v1/bookings/"+userId+"/"+reservationId)
+                .get("/v1/bookings/" + userId + "/" + reservationId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON);
 
@@ -194,7 +227,7 @@ public class ReservationControllerTest {
         ReservationDTO reservationDTO = mockReservationDTO(bookingId, ReservationType.BOOKING);
 
         RequestBuilder request = MockMvcRequestBuilders
-                .put("/v1/bookings/"+bookingId)
+                .put("/v1/bookings/" + bookingId)
                 .content(asJsonString(reservationDTO))
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON);
@@ -218,7 +251,7 @@ public class ReservationControllerTest {
                 .updateReservation(anyLong(), any(ReservationDTO.class));
 
         RequestBuilder request = MockMvcRequestBuilders
-                .put("/v1/bookings/"+bookingId)
+                .put("/v1/bookings/" + bookingId)
                 .content(asJsonString(reservationDTO))
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON);
@@ -236,7 +269,7 @@ public class ReservationControllerTest {
         long bookingId = 3L;
 
         RequestBuilder request = MockMvcRequestBuilders
-                .delete("/v1/bookings/"+bookingId)
+                .delete("/v1/bookings/" + bookingId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON);
 
@@ -257,7 +290,7 @@ public class ReservationControllerTest {
                 .deleteReservation(anyLong(), eq(ReservationType.BOOKING));
 
         RequestBuilder request = MockMvcRequestBuilders
-                .delete("/v1/bookings/"+bookingId)
+                .delete("/v1/bookings/" + bookingId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON);
 
@@ -323,7 +356,7 @@ public class ReservationControllerTest {
         long bookingId = 3L;
 
         RequestBuilder request = MockMvcRequestBuilders
-                .delete("/v1/blocks/"+bookingId)
+                .delete("/v1/blocks/" + bookingId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON);
 
@@ -344,7 +377,7 @@ public class ReservationControllerTest {
                 .deleteReservation(anyLong(), eq(ReservationType.BLOCK));
 
         RequestBuilder request = MockMvcRequestBuilders
-                .delete("/v1/blocks/"+bookingId)
+                .delete("/v1/blocks/" + bookingId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON);
 
@@ -367,7 +400,6 @@ public class ReservationControllerTest {
             throw new RuntimeException(e);
         }
     }
-
 
 
 }

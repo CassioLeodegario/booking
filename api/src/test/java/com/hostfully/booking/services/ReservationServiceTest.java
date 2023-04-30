@@ -14,9 +14,11 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.*;
 
 import java.time.LocalDate;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 import static com.hostfully.booking.mocks.CommonMocks.*;
@@ -116,6 +118,44 @@ public class ReservationServiceTest {
     }
 
     @Test
+    public void getReservationsByUser() {
+        final long userId = 1L;
+        final int page = 0;
+        final int size = 10;
+        final String sort = "checkIn";
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sort).ascending());
+
+        List<Reservation> reservationList = Collections.singletonList(mockReservation(userId, ReservationType.BOOKING));
+        Page<Reservation> reservationPage = new PageImpl<>(reservationList, pageable, reservationList.size());
+
+        when(reservationRepository.getReservationByUser(anyLong(), any(Pageable.class))).thenReturn(reservationPage);
+
+        Page<ReservationDTO> result = reservationService.getReservationsByUser(userId, pageable);
+
+        ReservationDTO expected = mockReservationDTO(userId, ReservationType.BOOKING);
+        assertThat(result).isNotNull();
+        assertThat(result.getTotalElements()).isEqualTo(1);
+        assertThat(result.getContent()).contains(expected);
+    }
+
+    @Test
+    public void getReservationsByUserNotFound() {
+        final long userId = 1L;
+        final int page = 0;
+        final int size = 10;
+        final String sort = "checkIn";
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sort).ascending());
+
+        when(reservationRepository.getReservationByUser(anyLong(), any(Pageable.class)))
+                .thenReturn(Page.empty(pageable));
+
+        assertThrows(ReservationNotFoundException.class,
+                () -> reservationService.getReservationsByUser(userId, pageable));
+    }
+
+    @Test
     void getReservationNotFound(){
         long reservationId = 5L;
         long userId = 3L;
@@ -143,7 +183,7 @@ public class ReservationServiceTest {
                 eq(ReservationStatus.ACTIVE)))
                 .thenReturn(Collections.emptyList());
 
-        when(reservationRepository.findById(anyLong()))
+        when(reservationRepository.getReservationByIdTypeAndStatus(anyLong(), eq(ReservationType.BOOKING), eq(ReservationStatus.ACTIVE)))
                 .thenReturn(Optional.of(mockReservation(reservationId, ReservationType.BOOKING)));
 
         when(reservationRepository.save(any(Reservation.class)))
@@ -167,7 +207,7 @@ public class ReservationServiceTest {
         String typeLowerCase = ReservationType.BOOKING.toString().toLowerCase();
         ReservationDTO reservationDTO = mockReservationDTO(reservationId, ReservationType.BOOKING);
 
-        when(reservationRepository.findById(anyLong()))
+        when(reservationRepository.getReservationByIdTypeAndStatus(anyLong(), eq(ReservationType.BOOKING), eq(ReservationStatus.ACTIVE)))
                 .thenReturn(Optional.empty());
 
         Exception result =  assertThrows(ReservationNotFoundException.class,
@@ -187,7 +227,7 @@ public class ReservationServiceTest {
                 eq(ReservationStatus.ACTIVE)))
                 .thenReturn(mockReservationList());
 
-        when(reservationRepository.findById(anyLong()))
+        when(reservationRepository.getReservationByIdTypeAndStatus(anyLong(), eq(ReservationType.BOOKING), eq(ReservationStatus.ACTIVE)))
                 .thenReturn(Optional.of(mockReservation(reservationId, ReservationType.BOOKING)));
 
         Exception result =  assertThrows(RangeNotAvailableException.class,
@@ -224,7 +264,7 @@ public class ReservationServiceTest {
     void deleteReservation(){
         Long reservationId = 2L;
 
-        when(reservationRepository.getReservationByIdAndType(anyLong(), eq(ReservationType.BOOKING)))
+        when(reservationRepository.getReservationByIdTypeAndStatus(anyLong(), eq(ReservationType.BOOKING), eq( ReservationStatus.ACTIVE)))
                 .thenReturn(Optional.of(mockReservation(reservationId, ReservationType.BOOKING)));
 
         when(reservationRepository.save(any(Reservation.class)))
@@ -246,7 +286,7 @@ public class ReservationServiceTest {
         Long reservationId = 2L;
         String typeLowerCase = ReservationType.BLOCK.toString().toLowerCase();
 
-        when(reservationRepository.getReservationByIdAndType(anyLong(), eq(ReservationType.BLOCK)))
+        when(reservationRepository.getReservationByIdTypeAndStatus(anyLong(), eq(ReservationType.BLOCK), eq( ReservationStatus.ACTIVE)))
                 .thenReturn(Optional.empty());
 
         Exception result =  assertThrows(ReservationNotFoundException.class,

@@ -11,6 +11,7 @@ public class ReservationConverter {
         reservation.setCheckIn(reservationDTO.getCheckIn());
         reservation.setCheckOut(reservationDTO.getCheckOut());
         reservation.setType(reservationDTO.getType());
+        reservation.setStatus(reservationDTO.getStatus());
         return reservation;
     }
 
@@ -22,6 +23,7 @@ public class ReservationConverter {
         reservationDTO.setCheckIn(reservation.getCheckIn());
         reservationDTO.setCheckOut(reservation.getCheckOut());
         reservationDTO.setType(reservation.getType());
+        reservationDTO.setStatus(reservation.getStatus());
         return reservationDTO;
     }
 }

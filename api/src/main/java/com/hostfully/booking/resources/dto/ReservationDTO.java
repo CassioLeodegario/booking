@@ -1,10 +1,12 @@
 package com.hostfully.booking.resources.dto;
 
+import com.hostfully.booking.enums.ReservationStatus;
 import com.hostfully.booking.enums.ReservationType;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
+import java.util.Objects;
 
 public class ReservationDTO {
 
@@ -17,6 +19,8 @@ public class ReservationDTO {
     private LocalDate checkOut;
 
     private ReservationType type;
+
+    private ReservationStatus status;
 
     @NotNull(message = "User must be informed")
     @Min(value = 1, message =  "User must be informed")
@@ -72,5 +76,26 @@ public class ReservationDTO {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public ReservationStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(ReservationStatus status) {
+        this.status = status;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ReservationDTO that = (ReservationDTO) o;
+        return Objects.equals(id, that.id) && Objects.equals(checkIn, that.checkIn) && Objects.equals(checkOut, that.checkOut) && type == that.type && status == that.status && Objects.equals(userId, that.userId) && Objects.equals(placeId, that.placeId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, checkIn, checkOut, type, userId, placeId);
     }
 }

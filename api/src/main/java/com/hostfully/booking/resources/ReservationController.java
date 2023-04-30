@@ -1,8 +1,11 @@
 package com.hostfully.booking.resources;
 
+import com.hostfully.booking.config.CustomPage;
 import com.hostfully.booking.enums.ReservationType;
 import com.hostfully.booking.resources.dto.ReservationDTO;
 import com.hostfully.booking.services.ReservationService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -11,8 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
+@Api(tags = "Reservations")
 @RestController
 @RequestMapping("/v1")
 public class ReservationController {
@@ -23,6 +25,7 @@ public class ReservationController {
         this.reservationService = reservationService;
     }
 
+    @ApiOperation("Create a new booking")
     @PostMapping("/bookings")
     public ResponseEntity<?> createBooking(
             @RequestBody @Validated  ReservationDTO reservationDTO
@@ -34,8 +37,9 @@ public class ReservationController {
                 .body(reservationService.createReservation(reservationDTO));
     }
 
+    @ApiOperation("Get a single booking")
     @GetMapping("/bookings/{userId}/{bookingId}")
-    public ResponseEntity<?> getReservation(
+    public ResponseEntity<?> getBooking(
             @PathVariable Long bookingId,
             @PathVariable Long userId){
 
@@ -44,17 +48,19 @@ public class ReservationController {
                 .body(reservationService.getReservation(bookingId, userId));
     }
 
-    @GetMapping("/bookings")
-    public ResponseEntity<List<ReservationDTO>> getAllReservations(
+    @ApiOperation("Get all bookings for a user")
+    @GetMapping(value = "/bookings")
+    public ResponseEntity<CustomPage<ReservationDTO>> getAllBookings(
             @PageableDefault(page = 0, size = 10, sort = "checkIn", direction = Sort.Direction.ASC) Pageable pageable,
             @RequestParam Long userId
     ){
 
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(reservationService.getReservationsByUser(userId));
+                .body(new CustomPage<>(reservationService.getReservationsByUser(userId, pageable)));
     }
 
+    @ApiOperation("Update a booking")
     @PutMapping("/bookings/{bookingId}")
     @ResponseStatus(HttpStatus.OK)
     public void updateBooking(
@@ -64,14 +70,16 @@ public class ReservationController {
         reservationService.updateReservation(bookingId, reservationDTO);
     }
 
+    @ApiOperation("Delete a booking")
     @DeleteMapping("/bookings/{bookingId}")
     @ResponseStatus(HttpStatus.OK)
-    public void deleteReservation(
+    public void deleteBooking(
             @PathVariable(value = "bookingId") Long bookingId
     ) {
         reservationService.deleteReservation(bookingId, ReservationType.BOOKING);
     }
 
+    @ApiOperation("Create a block")
     @PostMapping("/blocks")
     public ResponseEntity<?> createBlock(
             @RequestBody @Validated  ReservationDTO reservationDTO
@@ -83,6 +91,7 @@ public class ReservationController {
                 .body(reservationService.createReservation(reservationDTO));
     }
 
+    @ApiOperation("Remove a block")
     @DeleteMapping("/blocks/{blockId}")
     @ResponseStatus(HttpStatus.OK)
     public void deleteBlock(
