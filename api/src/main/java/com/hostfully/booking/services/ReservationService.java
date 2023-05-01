@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -39,6 +40,7 @@ public class ReservationService {
 
         if (isAvailable(reservationDTO.getCheckIn(),
                 reservationDTO.getCheckOut(),
+                reservationDTO.getPlaceId(),
                 Optional.ofNullable(reservationDTO.getId()))) {
             reservationDTO.setStatus(ReservationStatus.ACTIVE);
             Reservation reservation = ReservationConverter.getReservationFromReservationDTO(reservationDTO);
@@ -70,7 +72,7 @@ public class ReservationService {
     public Page<ReservationDTO> getReservationsByUser(Long userId, Pageable pageable) {
         logger.info("ReservationService.getReservationsByUser: Retrieving reservation");
 
-        Page<Reservation> reservations = reservationRepository.getReservationByUser(userId, pageable);
+        Page<Reservation> reservations = reservationRepository.getReservationByUser(userId, ReservationStatus.ACTIVE, pageable);
 
         if (!reservations.isEmpty()) {
             logger.info("ReservationService.getReservationsByUser: Finishing reservation retrieval");
@@ -79,7 +81,7 @@ public class ReservationService {
 
         }
 
-        throw new ReservationNotFoundException("No booking found for given user");
+        return Page.empty();
     }
 
     public void updateReservation(Long reservationId, ReservationDTO reservationDTO) {
@@ -92,6 +94,7 @@ public class ReservationService {
         if (reservationOptional.isPresent()) {
             if (isAvailable(reservationDTO.getCheckIn(),
                     reservationDTO.getCheckOut(),
+                    reservationDTO.getPlaceId(),
                     Optional.ofNullable(reservationId))) {
                 Reservation reservation = reservationOptional.get();
                 reservation.setCheckIn(reservationDTO.getCheckIn());
@@ -130,6 +133,7 @@ public class ReservationService {
         List<String> unavailableDates = getUnavailableDates(
                 reservationDTO.getCheckIn(),
                 reservationDTO.getCheckOut(),
+                reservationDTO.getPlaceId(),
                 Optional.ofNullable(reservationDTO.getId()));
 
         throw new RangeNotAvailableException(
@@ -142,10 +146,12 @@ public class ReservationService {
     private List<String> getUnavailableDates(
             LocalDate checkIn,
             LocalDate checkOut,
+            Long placeId,
             Optional<Long> reservationIdOptional) {
 
         List<String> dates = new ArrayList<>();
-        List<Reservation> reservations = reservationRepository.getReservations(checkIn, checkOut, ReservationStatus.ACTIVE);
+        List<Reservation> reservations = reservationRepository
+                .getReservations(checkIn, checkOut, placeId, ReservationStatus.ACTIVE);
 
         // remove current reservation from list so it is not considered occupied in case of update
         reservationIdOptional.ifPresent(reservationId -> reservations.removeIf(r -> reservationId.equals(r.getId())));
@@ -163,9 +169,14 @@ public class ReservationService {
         return dates;
     }
 
-    private boolean isAvailable(LocalDate checkIn, LocalDate checkOut, Optional<Long> reservationIdOptional) {
+    private boolean isAvailable(
+            LocalDate checkIn,
+            LocalDate checkOut,
+            Long placeId,
+            Optional<Long> reservationIdOptional) {
 
-        List<Reservation> reservations = reservationRepository.getReservations(checkIn, checkOut, ReservationStatus.ACTIVE);
+        List<Reservation> reservations = reservationRepository
+                .getReservations(checkIn, checkOut, placeId, ReservationStatus.ACTIVE);
         // remove current reservation from list so it is not considered occupied in case of update
         reservationIdOptional.ifPresent(reservationId -> reservations.removeIf(r -> reservationId.equals(r.getId())));
 

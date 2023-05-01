@@ -1,0 +1,20 @@
+HELP.md
+api/target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/api/src/main/**/target/
+!**/api/src/test/**/target/
+
+api/.mvn/wrapper/maven-wrapper.jar
+api/.mvn/wrapper/maven-wrapper.properties
+api/mvnw
+api/mvnw.cmd
+
+
+### IntelliJ IDEA ###
+api/.idea
+api/*.iws
+api/*.iml
+api/*.ipr
+
+booking-ui/node_modules
+

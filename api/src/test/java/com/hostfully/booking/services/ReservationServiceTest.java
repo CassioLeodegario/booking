@@ -43,6 +43,7 @@ public class ReservationServiceTest {
         when(reservationRepository.getReservations(
                 any(LocalDate.class),
                 any(LocalDate.class),
+                anyLong(),
                 eq(ReservationStatus.ACTIVE)))
                 .thenReturn(Collections.emptyList());
 
@@ -62,6 +63,7 @@ public class ReservationServiceTest {
         when(reservationRepository.getReservations(
                 any(LocalDate.class),
                 any(LocalDate.class),
+                anyLong(),
                 eq(ReservationStatus.ACTIVE)))
                 .thenReturn(mockReservationList());
 
@@ -129,7 +131,7 @@ public class ReservationServiceTest {
         List<Reservation> reservationList = Collections.singletonList(mockReservation(userId, ReservationType.BOOKING));
         Page<Reservation> reservationPage = new PageImpl<>(reservationList, pageable, reservationList.size());
 
-        when(reservationRepository.getReservationByUser(anyLong(), any(Pageable.class))).thenReturn(reservationPage);
+        when(reservationRepository.getReservationByUser(anyLong(), eq(ReservationStatus.ACTIVE), any(Pageable.class))).thenReturn(reservationPage);
 
         Page<ReservationDTO> result = reservationService.getReservationsByUser(userId, pageable);
 
@@ -148,7 +150,7 @@ public class ReservationServiceTest {
 
         Pageable pageable = PageRequest.of(page, size, Sort.by(sort).ascending());
 
-        when(reservationRepository.getReservationByUser(anyLong(), any(Pageable.class)))
+        when(reservationRepository.getReservationByUser(anyLong(), eq(ReservationStatus.ACTIVE), any(Pageable.class)))
                 .thenReturn(Page.empty(pageable));
 
         assertThrows(ReservationNotFoundException.class,
@@ -180,6 +182,7 @@ public class ReservationServiceTest {
         when(reservationRepository.getReservations(
                 any(LocalDate.class),
                 any(LocalDate.class),
+                anyLong(),
                 eq(ReservationStatus.ACTIVE)))
                 .thenReturn(Collections.emptyList());
 
@@ -224,6 +227,7 @@ public class ReservationServiceTest {
         when(reservationRepository.getReservations(
                 any(LocalDate.class),
                 any(LocalDate.class),
+                anyLong(),
                 eq(ReservationStatus.ACTIVE)))
                 .thenReturn(mockReservationList());
 

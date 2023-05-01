@@ -1,0 +1,123 @@
+:root {
+    --PrimaryColor: hsl(231, 99%, 66%);
+    --HoverColor: hsl(231, 96%, 56%);
+    --whiteColor: hsl(0, 0%, 100%);
+    --blackColor: hsl(0, 0, 18%);
+    --textColor: hsl(240, 1%, 48%);
+    --whiteColorDeam: hsl(0, 0, 93%);
+    --greyBg: hsl(0, 0%, 96%);
+    --greyText: rgb(190, 190, 190);
+    --inputColor: hsl(330, 12%, 97%);
+    --redColor: hsl(345, 100%, 60%);
+}
+
+.pageContainer {
+    padding: 7rem 10rem;
+
+    .listContainer {
+        max-width: 1400px;
+        margin-left: auto;
+        margin-right: auto;
+        margin-bottom: 3.5rem;
+
+        .tableHeader {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            padding: 50px;
+
+            .titleContainer {
+                .title {
+                    font-size: 50px;
+                    opacity: .8;
+                    margin-right: 15px;
+                }
+            }
+        }
+
+        .tableWrapper {
+
+            table {
+                width: 90%;
+                min-width: 700px;
+                color: rgba(0, 0, 0, .815);
+                margin-right: auto;
+                margin-left: auto;
+                margin-bottom: 25px;
+                border-collapse: separate;
+                border-spacing: 0px;
+                border-color: var(--greyBg);
+                border-bottom: 3px solid var(--greyBg);
+
+
+                thead {
+                    text-align: left;
+                    width: 100%;
+                    border-radius: 25px;
+
+                    tr {
+
+                        th {
+                            padding: 20px;
+                        }
+                    }
+
+                }
+
+                tbody td {
+                    border-top: 3px solid var(--greyBg);
+                    padding: 20px;
+
+
+                    img {
+                        margin-right: 10px;
+                        overflow: clip;
+                        max-width: 150px;
+                        max-height: 150px;
+                    }
+
+                    .item {
+                        width: 200px;
+                        padding: 25px;
+                        display: flex;
+                        flex-direction: column;
+                        justify-content: flex-start;
+                        text-align: left;
+                    }
+                }
+            }
+        }
+
+        .btnRemove {
+            background-color: var(--redColor);
+        }
+    }
+}
+
+@media (min-width: 1024px) {
+    .pageContainer {
+        .placeContainer {
+
+            .placeHeader {
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+        }
+    }
+
+}
+
+
+@media screen and (max-width: 1024px) {
+    .pageContainer {
+        .placeContainer {
+            .placeInfo {
+                display: flex;
+                flex-direction: column;
+            }
+
+        }
+    }
+}

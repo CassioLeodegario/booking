@@ -2,6 +2,7 @@ package com.hostfully.booking.config;
 
 import org.springframework.data.domain.Page;
 
+import java.util.Collections;
 import java.util.List;
 
 public class CustomPage<T> {
@@ -25,10 +26,14 @@ public class CustomPage<T> {
   }
 
   public CustomPage(Page<T> page) {
-    this.data = page.getContent();
-    this.pageable = new CustomPageable(page.getPageable().getPageNumber(),
-            page.getPageable().getPageSize(), page.getTotalElements());
-
+    if(!page.isEmpty()){
+      this.data = page.getContent();
+      this.pageable = new CustomPageable(page.getPageable().getPageNumber(),
+              page.getPageable().getPageSize(), page.getTotalElements());
+    }else{
+      data = Collections.emptyList();
+      pageable = new CustomPageable(0, 0, 0);
+    }
 
   }
 

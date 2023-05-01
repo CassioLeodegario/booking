@@ -1,0 +1,52 @@
+:root {
+  --PrimaryColor: hsl(231, 99%, 66%);
+  --HoverColor: hsl(231, 96%, 56%);
+  --whiteColor: hsl(0, 0%, 100%);
+  --blackColor: hsl(0, 0, 18%);
+  --textColor: hsl(240, 1%, 48%);
+  --whiteColorDeam: hsl(0, 0, 93%);
+  --greyBg: hsl(0, 0%, 96%);
+  --greyText: rgb(190, 190, 190);
+  --inputColor: hsl(330, 12%, 97%);
+  --redColor: hsl(345, 100%, 60%);
+}
+
+.dialogContainer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.dialogWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: var(--whiteColor);
+  padding: 20px;
+  border-radius: 10px;
+}
+.dialogWrapper h3 {
+  color: var(--blackColor);
+  font-size: 16px;
+}
+.dialogWrapper .buttonsContainer {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.dialogWrapper .buttonsContainer .confirmBtn {
+  background: var(--PrimaryColor);
+  color: var(--whiteColor);
+}
+.dialogWrapper .buttonsContainer .cancelBtn {
+  background: var(--redColor);
+  color: var(--whiteColor);
+}/*# sourceMappingURL=dialog.css.map */
