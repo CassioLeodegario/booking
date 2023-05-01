@@ -1,18 +1,18 @@
 import { MdLocationOn } from 'react-icons/md';
 import React, { useEffect } from 'react';
 import { FaWifi } from 'react-icons/fa';
-import { MdAirportShuttle, MdKingBed, MdBathtub } from 'react-icons/md';
+import { MdKingBed, MdBathtub } from 'react-icons/md';
 import { BsArrowRightShort } from 'react-icons/bs';
 import { useNavigate } from 'react-router-dom';
 
 import Aos from 'aos';
 import 'aos/dist/aos.css';
 
-import PLACES_DATA from '../../data/places';
+import { PLACES_DATA } from '../../contansts/contants';
 
 import './offers.css';
 
-const Offers = ({scrollRef}) => {
+const Offers = ({ scrollRef }) => {
     const navigate = useNavigate()
 
     const handlePlaceClick = (id) => {
@@ -20,14 +20,14 @@ const Offers = ({scrollRef}) => {
     }
 
     useEffect(() => {
-        Aos.init({duration: 2000})
+        Aos.init({ duration: 2000 })
     }, [])
 
     return (
         <section ref={scrollRef} className="offer container section">
             <div className="sectionContainer">
 
-                <div data-aos="fade-up" data-aos-duration="2000"  className="secIntro">
+                <div data-aos="fade-up" data-aos-duration="2000" className="secIntro">
                     <h2 className="secTitle">
                         Special Offers
                     </h2>
@@ -72,7 +72,7 @@ const Offers = ({scrollRef}) => {
                                     <div className='singleAmenity flex'>
                                         <FaWifi className='icon' />
                                         <small>Wi-Fi</small>
-                                    </div>                                    
+                                    </div>
                                 </div>
 
                                 <div className='location flex'>

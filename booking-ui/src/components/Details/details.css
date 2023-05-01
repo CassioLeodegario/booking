@@ -147,16 +147,8 @@
   }
 }
 
-@media (min-width: 1024px) {
-  .pageContainer .placeContainer .placeHeader {
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-  }
-}
-@media screen and (max-width: 1024px) {
-  .pageContainer .placeContainer .placeInfo {
-    display: flex;
-    flex-direction: column;
+@media screen and (max-width: 760px) {
+  .pageContainer {
+    padding: 5rem 1rem;
   }
 }/*# sourceMappingURL=details.css.map */

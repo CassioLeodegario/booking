@@ -116,6 +116,7 @@
 
                     .agentPicture {
                         padding: 0.5rem;
+
                         img {
                             padding: 0.15rem;
                             width: 5rem;
@@ -166,30 +167,11 @@
     }
 }
 
-@media (min-width: 1024px) {
+
+
+@media screen and (max-width: 760px) {
     .pageContainer {
-        .placeContainer {
+        padding: 5rem 1rem;
 
-            .placeHeader {
-                flex-direction: row;
-                justify-content: space-between;
-                align-items: center;
-            }
-
-        }
-    }
-
-}
-
-
-@media screen and (max-width: 1024px) {
-    .pageContainer {
-        .placeContainer {
-            .placeInfo {
-                display: flex;
-                flex-direction: column;
-            }
-
-        }
     }
 }

@@ -1,12 +1,13 @@
 
 import { useEffect, useState } from 'react';
 import axios from 'axios';
-import PLACES_DATA from '../../data/places';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import './list.css'
 import { useNavigate } from 'react-router-dom';
 import Dialog from '../Dialog/Dialog';
+import { API_URL, PLACES_DATA } from '../../contansts/contants';
+
 
 const BookingList = ({ setTransparent }) => {
     const [bookings, setBookings] = useState([]);
@@ -30,7 +31,7 @@ const BookingList = ({ setTransparent }) => {
         console.log(itemId)
 
         if (choose) {
-            axios.delete(`http://localhost:8080/v1/bookings/${itemId}`)
+            axios.delete(`${API_URL}/bookings/${itemId}`)
                 .then(() => {
                     const bookingIndex = bookings.findIndex((booking) => booking.id === itemId);
 
@@ -80,7 +81,7 @@ const BookingList = ({ setTransparent }) => {
     }
 
     useEffect(() => {
-        axios.get('http://localhost:8080//v1/bookings', {
+        axios.get(`${API_URL}/bookings`, {
             params: {
                 page: pageNumber,
                 size: 10,

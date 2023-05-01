@@ -1,5 +1,5 @@
 import { AiFillCloseCircle } from 'react-icons/ai';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { MdOutlinePlace } from "react-icons/md";
 import { TbGridDots } from "react-icons/tb";
 

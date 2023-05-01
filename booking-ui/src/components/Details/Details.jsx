@@ -12,7 +12,7 @@ import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { ImSpinner2 } from 'react-icons/im';
 
-import PLACES_DATA from '../../data/places';
+import { PLACES_DATA, API_URL } from '../../contansts/contants';
 
 import './details.css';
 
@@ -63,7 +63,7 @@ const Details = ({ setTransparent }) => {
 
         axios({
             method: method,
-            url: `http://localhost:8080/v1/bookings${path}`,
+            url: `${API_URL}/bookings${path}`,
             data: booking
         }).then(function (response) {
             toast.success(`Your place has been successfully ${isEdit ? 'updated' : 'booked'}!`);
@@ -93,7 +93,7 @@ const Details = ({ setTransparent }) => {
 
         const path = edit ? `unavailableDates/${currentBookingId}` : 'unavailableDates';
 
-        axios.get(`http://localhost:8080/v1/places/${id}/${path}`)
+        axios.get(`${API_URL}/places/${id}/${path}`)
             .then(response => {
                 const { data } = response;
                 setUnavailableDates(data.map((date) => {

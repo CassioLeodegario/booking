@@ -2,6 +2,8 @@ import img1 from '../assets/image (1).jpeg'
 import img2 from '../assets/image (2).jpeg'
 import img3 from '../assets/image (3).jpeg'
 
+const API_URL = process.env.REACT_APP_API_URL;
+
 const PLACES_DATA = [
     {
         id: 1,
@@ -41,4 +43,4 @@ const PLACES_DATA = [
     }
 ]
 
-export default PLACES_DATA;
+export { PLACES_DATA, API_URL };
