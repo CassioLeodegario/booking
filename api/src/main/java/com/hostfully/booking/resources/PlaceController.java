@@ -33,7 +33,7 @@ public class PlaceController {
 
     @ApiOperation("List unavailable dates for a place considering current booking")
     @GetMapping("/{placeId}/unavailableDates/{bookingId}")
-    public ResponseEntity<?> getUnavailableDates(
+    public ResponseEntity<?> getUnavailableDatesPerBooking(
             @PathVariable Long placeId,
             @PathVariable Long bookingId){
 
