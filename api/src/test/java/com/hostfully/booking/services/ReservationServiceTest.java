@@ -153,8 +153,8 @@ public class ReservationServiceTest {
         when(reservationRepository.getReservationByUser(anyLong(), eq(ReservationStatus.ACTIVE), any(Pageable.class)))
                 .thenReturn(Page.empty(pageable));
 
-        assertThrows(ReservationNotFoundException.class,
-                () -> reservationService.getReservationsByUser(userId, pageable));
+        Page<ReservationDTO> result = reservationService.getReservationsByUser(userId, pageable);
+        assertThat(result).isEmpty();
     }
 
     @Test
