@@ -44,7 +44,7 @@ You can check the API Swagger [`here`](http://booking-api-lb-1790693286.us-east-
 
 To clone the repository run the following command
 
-    git clone https://github.com/Wtheodoro/bed-buddy
+    git clone https://github.com/CassioLeodegario/booking.git
 
 ### `API`
 
