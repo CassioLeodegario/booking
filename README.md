@@ -1,5 +1,5 @@
 # `FullyHosted`
-Fully Hosted is a showcase booking plafor.
+Fully Hosted is a showcase booking platform.
 You can check it running [`here`](http://fullybooked-lb-226867597.us-east-2.elb.amazonaws.com/)
 
 ![image](https://user-images.githubusercontent.com/13815416/235527806-6bfd8529-c1ad-4567-9117-ba146496b104.png)
@@ -100,5 +100,5 @@ docker build -t booking-ui && docker run -p 8888:80 app
 Considering the purpose and the size of the application some I took some decisions
 - Didn't add Lombok 
 - Didn't add Model Mapper
-- Didn't Authentication
+- Didn't add Authentication
 - Added a helper endpoint to list dates blocked for a given place
